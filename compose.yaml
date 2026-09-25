@@ -1,0 +1,50 @@
+services:
+
+  nginx:
+    image: nginx:alpine
+    container_name: web_nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d:ro
+      - ./website1:/var/www/website1:ro
+      - ./website2:/var/www/website2:ro
+    restart: unless-stopped
+
+  nodered:
+    image: nodered/node-red:latest
+    container_name: web_nodered
+    ports:
+      - "1880:1880"
+    volumes:
+      - nodered_data:/data
+    restart: unless-stopped
+
+  mariadb:
+    image: mariadb:latest
+    container_name: web_mariadb
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${MARIADB_DATABASE}
+      MARIADB_USER: ${MARIADB_USER}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    restart: unless-stopped
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: web_phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: mariadb
+      PMA_PORT: 3306
+    depends_on:
+      - mariadb
+    restart: unless-stopped
+
+volumes:
+  nodered_data:
+  mariadb_data:
+
