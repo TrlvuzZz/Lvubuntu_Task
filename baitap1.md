@@ -1,4 +1,3 @@
-
 # BÀI TẬP 1
 
 ## 1. Giả lập hệ điều hành Linux
@@ -9,6 +8,14 @@ Sử dụng **VMware Workstation** để tạo máy ảo và cài đặt hệ đ
 
 ```bash
 cat /etc/os-release
+```
+
+Kết quả Ubuntu đã được cài đặt và hoạt động trên VMware:
+
+<p align="center">
+  <img src="images/baitap1/ubuntu_ver.png" width="850">
+</p>
+
 ---
 
 ## 2. Cài đặt Docker Compose trên Ubuntu
@@ -35,5 +42,5 @@ docker compose version
 Kết quả Docker và Docker Compose đã được cài đặt thành công:
 
 <p align="center">
-  <img src="images/baitap1/docker_compose_version.png" width="850">
+  <img src="images/baitap1/02-docker-compose-version.png" width="850">
 </p>
