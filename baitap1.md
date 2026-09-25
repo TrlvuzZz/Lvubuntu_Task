@@ -42,5 +42,5 @@ docker compose version
 Kết quả Docker và Docker Compose đã được cài đặt thành công:
 
 <p align="center">
-  <img src="images/baitap1/02-docker-compose-version.png" width="850">
+  <img src="images/baitap1/docker_compose_version.png" width="850">
 </p>
