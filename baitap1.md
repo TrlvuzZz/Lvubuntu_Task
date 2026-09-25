@@ -125,8 +125,8 @@ Sau khi đăng nhập, phpMyAdmin kết nối thành công với MariaDB và có
   <img src="images/baitap1/phpmyadmin-mariadb.png" width="850">
 </p>
 
-### 3.5. Cloudflared
+### 3.5. Cloudflare
 
-Cloudflared được sử dụng để tạo Cloudflare Tunnel, giúp đưa các dịch vụ đang chạy trong máy ảo ra Internet thông qua domain.
+Cloudflare được sử dụng để tạo Cloudflare Tunnel, giúp đưa các dịch vụ đang chạy trong máy ảo ra Internet thông qua domain.
 
 Phần cấu hình Cloudflared và domain sẽ được thực hiện ở bước tiếp theo.
