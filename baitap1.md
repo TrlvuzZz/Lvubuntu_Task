@@ -88,6 +88,9 @@ http://localhost:8080
 
 Kết quả cho thấy Nginx đã hoạt động và có thể phục vụ nội dung website.
 
+<p align="center">
+ <img src="images/baitap1/nginx.png" width="850">
+</p>
 ### 3.3. Kiểm tra Node-RED
 
 Node-RED được triển khai bằng Docker Compose và chạy trên cổng `1880`.
