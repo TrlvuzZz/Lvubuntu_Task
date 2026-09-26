@@ -1,11 +1,214 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <title>Website 2</title>
+<meta charset="UTF-8">
+<title>Con meo ngu ngoc</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        background: #050805;
+        color: #00ff66;
+        font-family: "Courier New", monospace;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #rain {
+        position: fixed;
+        inset: 0;
+        opacity: 0.15;
+        pointer-events: none;
+        white-space: pre;
+        font-size: 14px;
+        line-height: 14px;
+        overflow: hidden;
+    }
+
+    .box {
+        position: relative;
+        text-align: center;
+        z-index: 2;
+    }
+
+    h1 {
+        font-size: 18px;
+        letter-spacing: 5px;
+        margin-bottom: 35px;
+        text-shadow: 0 0 12px #00ff66;
+    }
+
+    #cat {
+        font-size: 22px;
+        line-height: 1.05;
+        white-space: pre;
+        cursor: pointer;
+        user-select: none;
+        text-shadow:
+            0 0 5px #00ff66,
+            0 0 15px #00ff66;
+        transition: transform 0.15s;
+    }
+
+    #cat:hover {
+        transform: scale(1.03);
+    }
+
+    #cat.pet {
+        transform: scale(0.97) translateY(4px);
+    }
+
+    #message {
+        height: 30px;
+        margin-top: 25px;
+        font-size: 15px;
+        opacity: 0.8;
+    }
+
+    .heart {
+        position: fixed;
+        font-size: 22px;
+        pointer-events: none;
+        animation: fly 1.2s forwards;
+        text-shadow: 0 0 10px #00ff66;
+    }
+
+    @keyframes fly {
+        from {
+            transform: translateY(0) scale(0.7);
+            opacity: 1;
+        }
+
+        to {
+            transform: translateY(-100px) scale(1.4);
+            opacity: 0;
+        }
+    }
+</style>
 </head>
+
 <body>
-    <h1>Website 2</h1>
-    <p>Đây là website thứ hai chạy trên Nginx.</p>
+
+<div id="rain"></div>
+
+<div class="box">
+    <h1>01000010 01001001 01001110 01000001 01010010 01011001</h1>
+
+    <div id="cat">        01       10
+       0101     1010
+      01010111110101
+     0101010101010101
+    0101  01  10  1010
+    0101    00    1010
+    0101  101010  1010
+     01010101010101
+       0101010101
+      010101010101
+    0101010101010101
+   010101010101010101
+   010101010101010101
+    0101010101010101
+      010101010101
+        01010101</div>
+
+    <div id="message">click the cat to pet it_</div>
+</div>
+
+<script>
+const cat = document.getElementById("cat");
+const message = document.getElementById("message");
+const rain = document.getElementById("rain");
+
+const normalCat = cat.textContent;
+
+const happyCat = `        01       10
+       0101     1010
+      01010111110101
+     0101010101010101
+    0101  00  00  1010
+    0101    00    1010
+    0101  100001  1010
+     01010101010101
+       0101010101
+      010101010101
+    0101010101010101
+   010101010101010101
+   010101010101010101
+    0101010101010101
+      010101010101
+        01010101`;
+
+let pets = 0;
+
+cat.addEventListener("click", (e) => {
+    pets++;
+
+    cat.textContent = happyCat;
+    cat.classList.add("pet");
+
+    const messages = [
+        "0101... prrrrrr...",
+        "cat.exe is happy",
+        "more pets detected...",
+        "happiness = 100%",
+        "010101 PURR 010101"
+    ];
+
+    message.textContent =
+        messages[Math.min(pets - 1, messages.length - 1)];
+
+    createHeart(e.clientX, e.clientY);
+
+    setTimeout(() => {
+        cat.textContent = normalCat;
+        cat.classList.remove("pet");
+    }, 450);
+});
+
+function createHeart(x, y) {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.textContent = Math.random() > 0.5 ? "01" : "10";
+
+    heart.style.left = (x + Math.random() * 50 - 25) + "px";
+    heart.style.top = y + "px";
+
+    document.body.appendChild(heart);
+
+    setTimeout(() => heart.remove(), 1200);
+}
+
+/* Mưa số 0 và 1 phía sau */
+function makeRain() {
+    let text = "";
+
+    for (let i = 0; i < 2500; i++) {
+        text += Math.random() > 0.5 ? "1" : "0";
+
+        if (i % 90 === 0) {
+            text += "\n";
+        } else {
+            text += " ";
+        }
+    }
+
+    rain.textContent = text;
+}
+
+makeRain();
+
+setInterval(() => {
+    rain.style.transform =
+        `translateY(${Math.random() * 20 - 10}px)`;
+}, 500);
+</script>
+
 </body>
 </html>
