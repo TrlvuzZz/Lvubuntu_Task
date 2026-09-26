@@ -1,213 +1,243 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<title>Con meo ngu ngoc</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-    * {
-        box-sizing: border-box;
-    }
+    <title>Kiểm tra độ mạnh mật khẩu</title>
 
-    body {
-        margin: 0;
-        min-height: 100vh;
-        background: #050805;
-        color: #00ff66;
-        font-family: "Courier New", monospace;
-        overflow: hidden;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    #rain {
-        position: fixed;
-        inset: 0;
-        opacity: 0.15;
-        pointer-events: none;
-        white-space: pre;
-        font-size: 14px;
-        line-height: 14px;
-        overflow: hidden;
-    }
-
-    .box {
-        position: relative;
-        text-align: center;
-        z-index: 2;
-    }
-
-    h1 {
-        font-size: 18px;
-        letter-spacing: 5px;
-        margin-bottom: 35px;
-        text-shadow: 0 0 12px #00ff66;
-    }
-
-    #cat {
-        font-size: 22px;
-        line-height: 1.05;
-        white-space: pre;
-        cursor: pointer;
-        user-select: none;
-        text-shadow:
-            0 0 5px #00ff66,
-            0 0 15px #00ff66;
-        transition: transform 0.15s;
-    }
-
-    #cat:hover {
-        transform: scale(1.03);
-    }
-
-    #cat.pet {
-        transform: scale(0.97) translateY(4px);
-    }
-
-    #message {
-        height: 30px;
-        margin-top: 25px;
-        font-size: 15px;
-        opacity: 0.8;
-    }
-
-    .heart {
-        position: fixed;
-        font-size: 22px;
-        pointer-events: none;
-        animation: fly 1.2s forwards;
-        text-shadow: 0 0 10px #00ff66;
-    }
-
-    @keyframes fly {
-        from {
-            transform: translateY(0) scale(0.7);
-            opacity: 1;
+    <style>
+        * {
+            box-sizing: border-box;
         }
 
-        to {
-            transform: translateY(-100px) scale(1.4);
-            opacity: 0;
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            background: #f3f4f6;
         }
-    }
-</style>
+
+        .box {
+            width: 420px;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        h2 {
+            margin-top: 0;
+            text-align: center;
+        }
+
+        .description {
+            text-align: center;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .password-box {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        #password {
+            width: 100%;
+            padding: 12px 70px 12px 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            outline: none;
+        }
+
+        #password:focus {
+            border-color: #555;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 6px 8px;
+        }
+
+        .check-button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #result {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            line-height: 1.8;
+        }
+
+        .note {
+            margin-top: 20px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+    </style>
 </head>
 
 <body>
 
-<div id="rain"></div>
-
 <div class="box">
-    <h1>01000010 01001001 01001110 01000001 01010010 01011001</h1>
 
-    <div id="cat">        01       10
-       0101     1010
-      01010111110101
-     0101010101010101
-    0101  01  10  1010
-    0101    00    1010
-    0101  101010  1010
-     01010101010101
-       0101010101
-      010101010101
-    0101010101010101
-   010101010101010101
-   010101010101010101
-    0101010101010101
-      010101010101
-        01010101</div>
+    <h2>Kiểm tra độ mạnh mật khẩu</h2>
 
-    <div id="message">click the cat to pet it_</div>
+    <div class="description">
+        Nhập mật khẩu để kiểm tra mức độ bảo mật
+    </div>
+
+    <div class="password-box">
+
+        <input
+            type="password"
+            id="password"
+            placeholder="Nhập mật khẩu"
+        >
+
+        <button
+            type="button"
+            class="toggle-password"
+            onclick="togglePassword()"
+        >
+            Hiện
+        </button>
+
+    </div>
+
+    <button
+        class="check-button"
+        onclick="checkPassword()"
+    >
+        Kiểm tra
+    </button>
+
+    <div id="result"></div>
+
+    <div class="note">
+        Mật khẩu được đánh giá dựa trên 5 tiêu chí:
+        độ dài, chữ hoa, chữ thường, chữ số và ký tự đặc biệt.
+    </div>
+
 </div>
 
 <script>
-const cat = document.getElementById("cat");
-const message = document.getElementById("message");
-const rain = document.getElementById("rain");
 
-const normalCat = cat.textContent;
+function togglePassword() {
 
-const happyCat = `        01       10
-       0101     1010
-      01010111110101
-     0101010101010101
-    0101  00  00  1010
-    0101    00    1010
-    0101  100001  1010
-     01010101010101
-       0101010101
-      010101010101
-    0101010101010101
-   010101010101010101
-   010101010101010101
-    0101010101010101
-      010101010101
-        01010101`;
+    const password =
+        document.getElementById("password");
 
-let pets = 0;
+    const button =
+        document.querySelector(".toggle-password");
 
-cat.addEventListener("click", (e) => {
-    pets++;
+    if (password.type === "password") {
 
-    cat.textContent = happyCat;
-    cat.classList.add("pet");
+        password.type = "text";
+        button.textContent = "Ẩn";
 
-    const messages = [
-        "0101... prrrrrr...",
-        "cat.exe is happy",
-        "more pets detected...",
-        "happiness = 100%",
-        "010101 PURR 010101"
-    ];
+    } else {
 
-    message.textContent =
-        messages[Math.min(pets - 1, messages.length - 1)];
+        password.type = "password";
+        button.textContent = "Hiện";
 
-    createHeart(e.clientX, e.clientY);
-
-    setTimeout(() => {
-        cat.textContent = normalCat;
-        cat.classList.remove("pet");
-    }, 450);
-});
-
-function createHeart(x, y) {
-    const heart = document.createElement("div");
-    heart.className = "heart";
-    heart.textContent = Math.random() > 0.5 ? "01" : "10";
-
-    heart.style.left = (x + Math.random() * 50 - 25) + "px";
-    heart.style.top = y + "px";
-
-    document.body.appendChild(heart);
-
-    setTimeout(() => heart.remove(), 1200);
+    }
 }
 
-/* Mưa số 0 và 1 phía sau */
-function makeRain() {
-    let text = "";
 
-    for (let i = 0; i < 2500; i++) {
-        text += Math.random() > 0.5 ? "1" : "0";
+async function checkPassword() {
 
-        if (i % 90 === 0) {
-            text += "\n";
-        } else {
-            text += " ";
-        }
+    const password =
+        document.getElementById("password").value;
+
+    const result =
+        document.getElementById("result");
+
+
+    if (password === "") {
+
+        result.style.display = "block";
+
+        result.innerHTML =
+            "Vui lòng nhập mật khẩu.";
+
+        return;
     }
 
-    rain.textContent = text;
+
+    result.style.display = "block";
+    result.innerHTML = "Đang kiểm tra...";
+
+
+    try {
+
+        const response = await fetch(
+            "/api/check-password?password=" +
+            encodeURIComponent(password)
+        );
+
+
+        if (!response.ok) {
+            throw new Error("API không phản hồi");
+        }
+
+
+        const data = await response.json();
+
+
+        result.innerHTML =
+            "<b>Điểm:</b> " +
+            data.score +
+            "/5<br>" +
+
+            "<b>Độ mạnh:</b> " +
+            data.level +
+            "<br>" +
+
+            "<b>Đánh giá:</b> " +
+            data.message;
+
+
+    } catch (error) {
+
+        result.innerHTML =
+            "Không thể kết nối tới API.";
+
+    }
 }
 
-makeRain();
 
-setInterval(() => {
-    rain.style.transform =
-        `translateY(${Math.random() * 20 - 10}px)`;
-}, 500);
+/* Nhấn Enter cũng có thể kiểm tra */
+
+document
+    .getElementById("password")
+    .addEventListener("keydown", function(event) {
+
+        if (event.key === "Enter") {
+            checkPassword();
+        }
+
+    });
+
 </script>
 
 </body>
