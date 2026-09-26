@@ -126,8 +126,245 @@ Sau khi đăng nhập, phpMyAdmin kết nối thành công với MariaDB và có
   <img src="images/baitap1/phpmyadmin-mariadb.png" width="850">
 </p>
 
-### 3.5. Cloudflare
+### 3.5. Cấu hình Cloudflare và tên miền
 
-Cloudflare được sử dụng để tạo Cloudflare Tunnel, giúp đưa các dịch vụ đang chạy trong máy ảo ra Internet thông qua domain.
+Cloudflare được sử dụng để quản lý tên miền và tạo Tunnel, giúp website đang chạy trên máy ảo Ubuntu có thể được truy cập từ Internet mà không cần mở trực tiếp cổng trên router.
 
-Phần cấu hình Cloudflared và domain sẽ được thực hiện ở bước tiếp theo.
+#### 3.5.1. Đăng ký tên miền
+
+Tên miền được sử dụng cho hệ thống là:
+
+```text
+l4mvu.id.vn
+```
+
+Sau khi đăng ký và kích hoạt thành công, tên miền được hiển thị trong trang quản lý của nhà cung cấp.
+
+<p align="center">
+  <img src="images/baitap1/domain-matbao.png" width="850">
+</p>
+
+#### 3.5.2. Cấu hình Nameserver trên Cloudflare
+
+Tên miền `l4mvu.id.vn` được thêm vào Cloudflare. Sau đó Cloudflare cung cấp hai Nameserver để thay thế Nameserver mặc định của nhà cung cấp tên miền:
+
+```text
+lucy.ns.cloudflare.com
+quentin.ns.cloudflare.com
+```
+
+<p align="center">
+  <img src="images/baitap1/cloudflare-nameserver.png" width="850">
+</p>
+
+Sau khi thay đổi Nameserver và Cloudflare xác nhận thành công, tên miền chuyển sang trạng thái hoạt động.
+
+<p align="center">
+  <img src="images/baitap1/cloudflare-active.png" width="850">
+</p>
+
+#### 3.5.3. Kiểm tra Nameserver
+
+Sử dụng DNS của Cloudflare `1.1.1.1` để kiểm tra Nameserver của tên miền:
+
+```bash
+nslookup -type=NS l4mvu.id.vn 1.1.1.1
+```
+
+Kết quả trả về hai Nameserver:
+
+```text
+lucy.ns.cloudflare.com
+quentin.ns.cloudflare.com
+```
+
+Điều này xác nhận tên miền đã sử dụng hệ thống DNS của Cloudflare.
+
+<p align="center">
+  <img src="images/baitap1/check-nameserver.png" width="850">
+</p>
+
+#### 3.5.4. Tạo Cloudflare Tunnel
+
+Tạo một Cloudflare Tunnel với tên:
+
+```text
+lvubuntu-tunnel
+```
+
+Cloudflare Tunnel được sử dụng để tạo kết nối giữa hệ thống Docker trong máy ảo Ubuntu và Cloudflare.
+
+Môi trường chạy Tunnel được lựa chọn là Docker để phù hợp với hệ thống đang triển khai bằng Docker Compose.
+
+<p align="center">
+  <img src="images/baitap1/cloudflare-tunnel-setup.png" width="850">
+</p>
+
+Sau khi container kết nối thành công, Tunnel chuyển sang trạng thái `Healthy`.
+
+<p align="center">
+  <img src="images/baitap1/cloudflare-tunnel.png" width="850">
+</p>
+
+#### 3.5.5. Thêm Cloudflare vào Docker Compose
+
+Dịch vụ Cloudflare được thêm vào file `compose.yaml` và sử dụng Tunnel Token được lưu trong file `.env`.
+
+Khởi chạy lại các dịch vụ:
+
+```bash
+docker compose up -d
+```
+
+Kiểm tra trạng thái:
+
+```bash
+docker compose ps
+```
+
+Kết quả cho thấy Cloudflare cùng các dịch vụ Nginx, Node-RED, MariaDB và phpMyAdmin đều đang hoạt động.
+
+<p align="center">
+  <img src="images/baitap1/cloudflare-docker.png" width="850">
+</p>
+
+#### 3.5.6. Cấu hình route cho website
+
+Tạo Published Application để đưa website đang chạy trên Nginx ra Internet.
+
+Hostname của website thứ nhất:
+
+```text
+web1.l4mvu.id.vn
+```
+
+Service trong mạng Docker:
+
+```text
+http://nginx:80
+```
+
+Cloudflare tự động tạo bản ghi DNS và chuyển các request từ hostname trên đến Nginx thông qua Tunnel.
+
+<p align="center">
+  <img src="images/baitap1/cloudflare-public-hostname.png" width="850">
+</p>
+
+#### 3.5.7. Kiểm tra website qua Cloudflare Tunnel
+
+Sau khi cấu hình Tunnel và Nginx, website có thể được truy cập trực tiếp bằng tên miền:
+
+```text
+https://web1.l4mvu.id.vn
+```
+
+Kết quả cho thấy Website 1 được Nginx phục vụ thành công thông qua Cloudflare Tunnel.
+
+<p align="center">
+  <img src="images/baitap1/cloudflare-website1.png" width="850">
+</p>
+
+---
+
+## 4. Cấu hình Nginx chạy 2 website với 2 tên miền khác nhau
+
+Nginx được cấu hình để chạy hai website riêng biệt trên cùng một Web Server. Mỗi website sử dụng một tên miền khác nhau và được định tuyến thông qua Cloudflare Tunnel.
+
+Hai tên miền được sử dụng:
+
+```text
+web1.l4mvu.id.vn
+web2.l4mvu.id.vn
+```
+
+### 4.1. Cấu hình hai website trên Nginx
+
+Trong file `nginx/default.conf`, hai khối `server` được cấu hình với hai `server_name` khác nhau.
+
+Website 1 sử dụng:
+
+```text
+web1.l4mvu.id.vn
+```
+
+và lấy nội dung từ thư mục:
+
+```text
+/var/www/website1
+```
+
+Website 2 sử dụng:
+
+```text
+web2.l4mvu.id.vn
+```
+
+và lấy nội dung từ thư mục:
+
+```text
+/var/www/website2
+```
+
+Cấu hình này giúp Nginx xác định website cần trả về dựa trên tên miền mà người dùng truy cập.
+
+<p align="center">
+  <img src="images/baitap1/nginx-two-domains.png" width="850">
+</p>
+
+### 4.2. Kiểm tra cấu hình Nginx
+
+Sau khi cấu hình hai tên miền, sử dụng lệnh sau để kiểm tra cú pháp của Nginx:
+
+```bash
+docker compose exec nginx nginx -t
+```
+
+Kết quả:
+
+```text
+syntax is ok
+test is successful
+```
+
+cho thấy file cấu hình Nginx hợp lệ và có thể sử dụng.
+
+<p align="center">
+  <img src="images/baitap1/nginx-config-test.png" width="850">
+</p>
+
+### 4.3. Kiểm tra Website 1
+
+Truy cập Website 1 bằng tên miền:
+
+```text
+https://web1.l4mvu.id.vn
+```
+
+Website 1 được Nginx phục vụ thành công thông qua Cloudflare Tunnel.
+
+<p align="center">
+  <img src="images/baitap1/cloudflare-website1.png" width="850">
+</p>
+
+### 4.4. Kiểm tra Website 2
+
+Truy cập Website 2 bằng tên miền:
+
+```text
+https://web2.l4mvu.id.vn
+```
+
+Website 2 hiển thị nội dung khác với Website 1, chứng minh Nginx có thể phân biệt tên miền và phục vụ hai website riêng biệt trên cùng một hệ thống.
+
+<p align="center">
+  <img src="images/baitap1/cloudflare-website2.png" width="850">
+</p>
+
+### 4.5. Kết quả
+
+Sau khi hoàn thành cấu hình, hệ thống đã chạy thành công hai website với hai tên miền khác nhau:
+
+- `web1.l4mvu.id.vn` → Website 1
+- `web2.l4mvu.id.vn` → Website 2
+
+Cả hai website đều được xử lý bởi Nginx trong Docker và có thể truy cập từ Internet thông qua Cloudflare Tunnel.
