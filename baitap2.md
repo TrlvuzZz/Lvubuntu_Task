@@ -1,8 +1,8 @@
 # BÀI TẬP 2
 
-Bài tập thực hành xây dựng API kiểm tra độ mạnh mật khẩu bằng Node-RED, cấu hình Nginx để website có thể kết nối tới API và sử dụng JavaScript để gửi dữ liệu, nhận kết quả JSON và hiển thị trực tiếp trên giao diện.
+Bài tập thực hành tạo API bằng Node-RED, cấu hình Nginx để website có thể truy cập API và sử dụng JavaScript trên trang HTML để gọi API.
 
-## 1. Tạo API trên Node-RED
+## 1. Sử dụng Node-RED tạo API đơn giản
 
 Trước khi thực hiện, kiểm tra trạng thái các container bằng lệnh:
 
@@ -22,9 +22,9 @@ http://localhost:1880
 
 ![Giao diện Node-RED](./images/baitap2/nodered-interface.png)
 
-### 1.1. Tạo luồng xử lý API
+### 1.1. Tạo luồng API
 
-Sử dụng ba node `http in`, `function` và `http response` để xây dựng API.
+Trên Node-RED, sử dụng các node để xây dựng API:
 
 ```text
 http in → function → http response
@@ -32,9 +32,9 @@ http in → function → http response
 
 Trong đó:
 
-- `http in`: nhận yêu cầu kiểm tra mật khẩu.
-- `function`: xử lý và đánh giá độ mạnh mật khẩu.
-- `http response`: trả kết quả về dưới dạng JSON.
+- `http in`: nhận request gửi đến API.
+- `function`: xử lý dữ liệu.
+- `http response`: trả kết quả về cho client.
 
 ![Luồng API trên Node-RED](./images/baitap2/nodered-api-flow.png)
 
@@ -52,7 +52,7 @@ GET
 /api/check-password
 ```
 
-Mật khẩu được truyền vào thông qua tham số `password`.
+Mật khẩu cần kiểm tra được truyền thông qua tham số `password`.
 
 Ví dụ:
 
@@ -62,9 +62,16 @@ Ví dụ:
 
 ![Cấu hình HTTP In](./images/baitap2/http-in-config.png)
 
-### 1.3. Xây dựng thuật toán kiểm tra mật khẩu
+Sau khi hoàn thành các node, nhấn `Deploy` để API bắt đầu hoạt động.
 
-Node `function` kiểm tra mật khẩu dựa trên 5 tiêu chí:
+
+## 2. Cấu hình Nginx và xây dựng thuật toán cho API
+
+### 2.1. Xây dựng thuật toán kiểm tra độ mạnh mật khẩu
+
+API được xây dựng với chức năng kiểm tra độ mạnh của mật khẩu.
+
+Node `function` nhận mật khẩu từ request và kiểm tra 5 tiêu chí:
 
 - Có ít nhất 8 ký tự.
 - Có chữ cái viết hoa.
@@ -74,7 +81,7 @@ Node `function` kiểm tra mật khẩu dựa trên 5 tiêu chí:
 
 Mỗi tiêu chí thỏa mãn được cộng 1 điểm, tổng điểm tối đa là 5.
 
-Mức độ mật khẩu:
+Kết quả được phân loại:
 
 - 0 - 2 điểm: Yếu.
 - 3 - 4 điểm: Trung bình.
@@ -82,15 +89,9 @@ Mức độ mật khẩu:
 
 ![Cấu hình Function kiểm tra mật khẩu](./images/baitap2/function-config.png)
 
-### 1.4. Kiểm tra API
+Sau khi xử lý, API trả về dữ liệu dưới dạng JSON.
 
-Sau khi hoàn thành luồng xử lý, nhấn `Deploy` và kiểm tra API trên trình duyệt:
-
-```text
-http://localhost:1880/api/check-password?password=Hello123!
-```
-
-API trả về dữ liệu JSON:
+Ví dụ khi kiểm tra mật khẩu `Hello123!`:
 
 ```json
 {
@@ -101,12 +102,17 @@ API trả về dữ liệu JSON:
 }
 ```
 
+Kiểm tra API trực tiếp trên trình duyệt:
+
+```text
+http://localhost:1880/api/check-password?password=Hello123!
+```
+
 ![Kết quả API Node-RED](./images/baitap2/api-result.png)
 
+### 2.2. Cấu hình Nginx kết nối tới Node-RED
 
-## 2. Cấu hình Nginx để website gọi API Node-RED
-
-Để website có thể gọi API mà không cần truy cập trực tiếp cổng `1880`, Nginx được cấu hình để chuyển tiếp các request có đường dẫn `/api/` tới Node-RED.
+Để website có thể gọi API Node-RED thông qua đường dẫn `/api/`, cấu hình Nginx chuyển tiếp request tới dịch vụ Node-RED.
 
 Thêm cấu hình:
 
@@ -134,27 +140,27 @@ Sau khi cấu hình hợp lệ, reload Nginx:
 docker compose exec nginx nginx -s reload
 ```
 
-Khi đó request:
+Khi đó, request từ website tới:
 
 ```text
 /api/check-password
 ```
 
-sẽ được Nginx chuyển tiếp tới API đang chạy trên Node-RED.
+sẽ được Nginx chuyển tiếp tới Node-RED.
 
 
-## 3. Sử dụng JavaScript trên website để gọi API
+## 3. Code JavaScript trên trang HTML để gọi API
 
-Website 2 được xây dựng thành giao diện kiểm tra độ mạnh mật khẩu.
+Website 2 được sử dụng làm giao diện kiểm tra độ mạnh mật khẩu.
 
-Người dùng có thể:
+Giao diện cho phép người dùng:
 
 - Nhập mật khẩu cần kiểm tra.
 - Hiện hoặc ẩn mật khẩu.
 - Nhấn nút `Kiểm tra`.
 - Xem điểm và mức độ bảo mật của mật khẩu.
 
-JavaScript sử dụng `fetch()` để gửi mật khẩu tới API:
+JavaScript sử dụng `fetch()` để gọi API:
 
 ```javascript
 const response = await fetch(
@@ -165,17 +171,15 @@ const response = await fetch(
 const data = await response.json();
 ```
 
-`encodeURIComponent()` được sử dụng để mã hóa giá trị mật khẩu trước khi đưa vào URL.
+Trong đó, `encodeURIComponent()` được sử dụng để mã hóa mật khẩu trước khi đưa vào URL.
 
-Dữ liệu JSON trả về từ API được JavaScript xử lý và hiển thị trực tiếp trên giao diện.
+Sau khi nhận dữ liệu JSON từ API, JavaScript lấy các giá trị `score`, `level` và `message` để hiển thị kết quả trên trang HTML.
 
 ![Code JavaScript gọi API](./images/baitap2/javascript-fetch.png)
 
-### 3.1. Kiểm tra hoạt động của website
+### 3.1. Kiểm tra kết quả trên website
 
-Truy cập Website 2 thông qua tên miền đã cấu hình.
-
-Nhập mật khẩu và nhấn nút `Kiểm tra`. Website sẽ gửi request tới API và hiển thị kết quả trả về.
+Người dùng nhập mật khẩu và nhấn nút `Kiểm tra`.
 
 Quá trình hoạt động:
 
@@ -188,24 +192,26 @@ Nginx
         ↓
 Node-RED API
         ↓
-Function kiểm tra mật khẩu
+Function xử lý
         ↓
 JSON
         ↓
-Website hiển thị kết quả
+JavaScript hiển thị kết quả
 ```
+
+Kết quả kiểm tra được hiển thị trực tiếp trên website.
 
 ![Website gọi API thành công](./images/baitap2/website-api-result.png)
 
 
 ## 4. Kết quả
 
-Hoàn thành Bài tập 2 với ba nội dung chính:
+Hoàn thành các yêu cầu của Bài tập 2:
 
-- Xây dựng API kiểm tra độ mạnh mật khẩu trên Node-RED bằng `http in`, `function` và `http response`.
-- Cấu hình Nginx để website có thể gửi request tới API Node-RED.
-- Sử dụng JavaScript `fetch()` trên trang HTML để gọi API, nhận dữ liệu JSON và hiển thị kết quả.
+- Sử dụng Node-RED với `http in` và `http response` để tạo API.
+- Xây dựng thuật toán kiểm tra độ mạnh mật khẩu và cấu hình Nginx để website có thể truy cập API Node-RED.
+- Sử dụng JavaScript trên trang HTML để gọi API, nhận dữ liệu JSON và hiển thị kết quả.
 
-API có khả năng kiểm tra mật khẩu dựa trên 5 tiêu chí và trả về số điểm, mức độ bảo mật cùng nội dung đánh giá.
+API kiểm tra mật khẩu dựa trên 5 tiêu chí và trả về số điểm, mức độ bảo mật cùng nội dung đánh giá.
 
-Website có giao diện nhập mật khẩu, chức năng hiện/ẩn mật khẩu và hiển thị kết quả kiểm tra trực tiếp cho người dùng.
+Website có thể nhập mật khẩu, hiện hoặc ẩn mật khẩu và hiển thị kết quả kiểm tra trực tiếp cho người dùng.
