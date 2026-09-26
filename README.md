@@ -11,25 +11,17 @@ Repository lưu trữ nội dung bài tập môn **Lập trình Web**.
 ## Nội dung
 
 - [Bài tập 1](baitap1.md) - Linux, Docker Compose, Nginx, Node-RED, MariaDB, phpMyAdmin và Cloudflared
-- Bài tập 2 - Node-RED API và JavaScript gọi API *(đang thực hiện)*
+- [Bài tập 2](baitap2.md) - Node-RED API và JavaScript gọi API *(đang thực hiện)*
 
 ## Deadline
 29/09/2026 23:59
 
-## Kết quả dự kiến
+## Kết quả
 
 Bài tập 1
-- Cài đặt và sử dụng thành công hệ điều hành Linux trên máy ảo.
-- Cài đặt Docker và Docker Compose trên Linux.
-- Triển khai thành công các dịch vụ Nginx, Node-RED, MariaDB, phpMyAdmin và Cloudflared bằng Docker Compose.
-- Cấu hình tên miền và Cloudflare Tunnel để website có thể truy cập từ Internet.
-- Cấu hình Nginx chạy đồng thời 2 website với 2 tên miền khác nhau.
-- Các container hoạt động ổn định và hai website có thể truy cập đúng theo tên miền đã cấu hình.
+Hoàn thành việc triển khai môi trường Linux trên máy ảo, cài đặt Docker Compose và các dịch vụ cần thiết. Nginx được cấu hình để chạy hai website với hai tên miền riêng và có thể truy cập thông qua Cloudflare Tunnel.
 
 Bài tập 2
-- Tạo được API đơn giản trên Node-RED bằng các node `http in` và `http response`.
-- API có thể nhận request và trả về dữ liệu ở định dạng JSON.
-- Cấu hình Nginx để website có thể gọi đến API được triển khai trên Node-RED.
-- Viết JavaScript trên trang HTML để gửi request đến API và nhận dữ liệu trả về.
-- Hiển thị hoặc xử lý dữ liệu JSON nhận được từ API trên giao diện website.
-- Website và API hoạt động đúng khi truy cập thông qua tên miền đã cấu hình.
+Hoàn thành API kiểm tra độ mạnh mật khẩu trên Node-RED. API đánh giá mật khẩu dựa trên độ dài, chữ hoa, chữ thường, chữ số và ký tự đặc biệt.
+
+Nginx được cấu hình để chuyển tiếp request từ website tới Node-RED. Website sử dụng JavaScript để gọi API, nhận kết quả JSON và hiển thị số điểm, mức độ bảo mật và nội dung đánh giá cho người dùng.
