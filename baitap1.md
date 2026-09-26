@@ -1,3 +1,45 @@
+## Cài đặt và cấu hình Git/GitHub
+
+Kiểm tra phiên bản Git đã được cài đặt trên máy:
+
+```bash
+git --version
+```
+
+![Kiểm tra phiên bản Git](./images/git-version.png)
+
+Kiểm tra tên người dùng Git đã cấu hình:
+
+```bash
+git config --global user.name
+```
+
+![Kiểm tra tên người dùng Git](./images/git-username.png)
+
+Kiểm tra email được sử dụng cho Git:
+
+```bash
+git config --global user.email
+```
+
+![Kiểm tra email Git](./images/git-email.png)
+
+Kiểm tra kết nối SSH với tài khoản GitHub:
+
+```bash
+ssh -T git@github.com
+```
+
+![Kiểm tra kết nối SSH với GitHub](./images/github-ssh.png)
+
+Kiểm tra các thông tin cấu hình Git hiện tại:
+
+```bash
+git config --global --list
+```
+
+![Kiểm tra cấu hình Git](./images/git-config.png)
+
 # BÀI TẬP 1
 
 ## 1. Giả lập hệ điều hành Linux
