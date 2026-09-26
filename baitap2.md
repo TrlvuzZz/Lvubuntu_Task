@@ -2,9 +2,9 @@
 
 Bài tập thực hành xây dựng API kiểm tra độ mạnh mật khẩu bằng Node-RED, cấu hình Nginx để website có thể kết nối tới API và sử dụng JavaScript để gửi dữ liệu, nhận kết quả JSON và hiển thị trực tiếp trên giao diện.
 
-## 1. Kiểm tra hệ thống Docker Compose
+## 1. Tạo API trên Node-RED
 
-Trước khi thực hiện Bài tập 2, kiểm tra trạng thái các container đã được triển khai từ Bài tập 1.
+Trước khi thực hiện, kiểm tra trạng thái các container bằng lệnh:
 
 ```bash
 docker compose ps
@@ -14,23 +14,17 @@ Các dịch vụ Nginx, Node-RED, MariaDB, phpMyAdmin và Cloudflared đều đa
 
 ![Kiểm tra trạng thái các container](./images/baitap2/docker-compose-ps.png)
 
-## 2. Tạo API trên Node-RED
-
-Truy cập giao diện Node-RED thông qua địa chỉ:
+Truy cập Node-RED tại địa chỉ:
 
 ```text
 http://localhost:1880
 ```
 
-Node-RED đang hoạt động và có thể truy cập trực tiếp từ trình duyệt trên Ubuntu.
-
 ![Giao diện Node-RED](./images/baitap2/nodered-interface.png)
 
-### 2.1. Tạo luồng xử lý API
+### 1.1. Tạo luồng xử lý API
 
-Sử dụng ba node `http in`, `function` và `http response` để xây dựng API kiểm tra độ mạnh mật khẩu.
-
-Luồng xử lý:
+Sử dụng ba node `http in`, `function` và `http response` để xây dựng API.
 
 ```text
 http in → function → http response
@@ -39,16 +33,14 @@ http in → function → http response
 Trong đó:
 
 - `http in`: nhận yêu cầu kiểm tra mật khẩu.
-- `function`: phân tích mật khẩu và tính điểm.
+- `function`: xử lý và đánh giá độ mạnh mật khẩu.
 - `http response`: trả kết quả về dưới dạng JSON.
 
 ![Luồng API trên Node-RED](./images/baitap2/nodered-api-flow.png)
 
-### 2.2. Cấu hình HTTP In
+### 1.2. Cấu hình HTTP In
 
-Node `http in` được sử dụng để tiếp nhận request gửi đến API.
-
-Phương thức:
+Node `http in` sử dụng phương thức:
 
 ```text
 GET
@@ -60,7 +52,7 @@ GET
 /api/check-password
 ```
 
-Mật khẩu cần kiểm tra được truyền vào thông qua tham số `password`.
+Mật khẩu được truyền vào thông qua tham số `password`.
 
 Ví dụ:
 
@@ -70,9 +62,9 @@ Ví dụ:
 
 ![Cấu hình HTTP In](./images/baitap2/http-in-config.png)
 
-### 2.3. Xây dựng thuật toán kiểm tra mật khẩu
+### 1.3. Xây dựng thuật toán kiểm tra mật khẩu
 
-Node `function` nhận mật khẩu từ request và kiểm tra lần lượt 5 tiêu chí:
+Node `function` kiểm tra mật khẩu dựa trên 5 tiêu chí:
 
 - Có ít nhất 8 ký tự.
 - Có chữ cái viết hoa.
@@ -80,29 +72,25 @@ Node `function` nhận mật khẩu từ request và kiểm tra lần lượt 5 
 - Có chữ số.
 - Có ký tự đặc biệt.
 
-Mỗi tiêu chí thỏa mãn được cộng 1 điểm. Tổng điểm tối đa là 5.
+Mỗi tiêu chí thỏa mãn được cộng 1 điểm, tổng điểm tối đa là 5.
 
-Mức độ mật khẩu được xác định như sau:
+Mức độ mật khẩu:
 
-- Từ 0 đến 2 điểm: Yếu.
-- Từ 3 đến 4 điểm: Trung bình.
-- Đạt 5 điểm: Mạnh.
-
-Sau khi xử lý, Function tạo dữ liệu kết quả và chuyển tới node `http response`.
+- 0 - 2 điểm: Yếu.
+- 3 - 4 điểm: Trung bình.
+- 5 điểm: Mạnh.
 
 ![Cấu hình Function kiểm tra mật khẩu](./images/baitap2/function-config.png)
 
-### 2.4. Kiểm tra API Node-RED
+### 1.4. Kiểm tra API
 
-Sau khi hoàn thành luồng xử lý, nhấn `Deploy` để áp dụng thay đổi.
-
-API được kiểm tra trực tiếp trên trình duyệt bằng địa chỉ:
+Sau khi hoàn thành luồng xử lý, nhấn `Deploy` và kiểm tra API trên trình duyệt:
 
 ```text
 http://localhost:1880/api/check-password?password=Hello123!
 ```
 
-Với mật khẩu `Hello123!`, API trả về dữ liệu JSON tương ứng:
+API trả về dữ liệu JSON:
 
 ```json
 {
@@ -113,15 +101,14 @@ Với mật khẩu `Hello123!`, API trả về dữ liệu JSON tương ứng:
 }
 ```
 
-Điều này cho thấy request đã được Node-RED tiếp nhận, Function xử lý thành công và kết quả được trả về thông qua `http response`.
-
 ![Kết quả API Node-RED](./images/baitap2/api-result.png)
 
-## 3. Cấu hình Nginx kết nối với Node-RED
 
-Để website có thể gọi API mà không cần truy cập trực tiếp cổng `1880`, Nginx được cấu hình làm trung gian chuyển tiếp request tới Node-RED.
+## 2. Cấu hình Nginx để website gọi API Node-RED
 
-Trong cấu hình của website, thêm đường dẫn `/api/` và chuyển tiếp request tới dịch vụ Node-RED:
+Để website có thể gọi API mà không cần truy cập trực tiếp cổng `1880`, Nginx được cấu hình để chuyển tiếp các request có đường dẫn `/api/` tới Node-RED.
+
+Thêm cấu hình:
 
 ```nginx
 location /api/ {
@@ -133,34 +120,39 @@ location /api/ {
 
 ![Cấu hình Nginx cho API](./images/baitap2/nginx-api-config.png)
 
-Sau khi thay đổi cấu hình, kiểm tra cú pháp Nginx bằng lệnh:
+Kiểm tra cấu hình Nginx:
 
 ```bash
 docker compose exec nginx nginx -t
 ```
 
-Nếu cấu hình không có lỗi, Nginx thông báo kiểm tra thành công.
-
 ![Kiểm tra cấu hình Nginx](./images/baitap2/nginx-test.png)
 
-Tiến hành reload Nginx để áp dụng cấu hình mới:
+Sau khi cấu hình hợp lệ, reload Nginx:
 
 ```bash
 docker compose exec nginx nginx -s reload
 ```
 
-Sau bước này, các request có đường dẫn `/api/` từ website sẽ được Nginx chuyển tiếp tới Node-RED.
+Khi đó request:
 
-## 4. Viết JavaScript gọi API từ website
+```text
+/api/check-password
+```
 
-Website 2 được thay đổi thành giao diện kiểm tra độ mạnh mật khẩu.
+sẽ được Nginx chuyển tiếp tới API đang chạy trên Node-RED.
+
+
+## 3. Sử dụng JavaScript trên website để gọi API
+
+Website 2 được xây dựng thành giao diện kiểm tra độ mạnh mật khẩu.
 
 Người dùng có thể:
 
 - Nhập mật khẩu cần kiểm tra.
-- Hiện hoặc ẩn nội dung mật khẩu.
-- Nhấn nút `Kiểm tra` để gửi yêu cầu.
-- Xem điểm và mức độ bảo mật ngay trên website.
+- Hiện hoặc ẩn mật khẩu.
+- Nhấn nút `Kiểm tra`.
+- Xem điểm và mức độ bảo mật của mật khẩu.
 
 JavaScript sử dụng `fetch()` để gửi mật khẩu tới API:
 
@@ -175,62 +167,45 @@ const data = await response.json();
 
 `encodeURIComponent()` được sử dụng để mã hóa giá trị mật khẩu trước khi đưa vào URL.
 
-Sau khi API trả dữ liệu JSON, JavaScript lấy các giá trị `score`, `level` và `message` để hiển thị kết quả lên giao diện.
+Dữ liệu JSON trả về từ API được JavaScript xử lý và hiển thị trực tiếp trên giao diện.
 
 ![Code JavaScript gọi API](./images/baitap2/javascript-fetch.png)
 
-## 5. Kiểm tra website gọi API
+### 3.1. Kiểm tra hoạt động của website
 
 Truy cập Website 2 thông qua tên miền đã cấu hình.
 
-Người dùng nhập mật khẩu vào ô kiểm tra và nhấn nút `Kiểm tra`.
+Nhập mật khẩu và nhấn nút `Kiểm tra`. Website sẽ gửi request tới API và hiển thị kết quả trả về.
 
-Quá trình xử lý diễn ra theo thứ tự:
+Quá trình hoạt động:
 
 ```text
 Người dùng nhập mật khẩu
         ↓
-JavaScript gửi request
+JavaScript fetch()
         ↓
-Nginx nhận request /api/
+Nginx
         ↓
-Node-RED xử lý mật khẩu
+Node-RED API
         ↓
-API trả dữ liệu JSON
+Function kiểm tra mật khẩu
         ↓
-JavaScript nhận kết quả
+JSON
         ↓
-Website hiển thị đánh giá
+Website hiển thị kết quả
 ```
-
-Khi nhập mật khẩu đáp ứng đầy đủ 5 tiêu chí, website hiển thị số điểm, mức độ mạnh và nội dung đánh giá tương ứng.
 
 ![Website gọi API thành công](./images/baitap2/website-api-result.png)
 
-## 6. Kết quả
 
-Bài tập đã xây dựng thành công API kiểm tra độ mạnh mật khẩu bằng Node-RED với các node `http in`, `function` và `http response`.
+## 4. Kết quả
 
-API có khả năng nhận mật khẩu, kiểm tra 5 tiêu chí và trả kết quả dưới dạng JSON.
+Hoàn thành Bài tập 2 với ba nội dung chính:
 
-Nginx được sử dụng để chuyển tiếp request từ website tới Node-RED. JavaScript trên trang HTML sử dụng `fetch()` để gọi API, nhận dữ liệu trả về và hiển thị kết quả trực tiếp trên giao diện.
+- Xây dựng API kiểm tra độ mạnh mật khẩu trên Node-RED bằng `http in`, `function` và `http response`.
+- Cấu hình Nginx để website có thể gửi request tới API Node-RED.
+- Sử dụng JavaScript `fetch()` trên trang HTML để gọi API, nhận dữ liệu JSON và hiển thị kết quả.
 
-Ngoài chức năng kiểm tra độ mạnh, giao diện còn hỗ trợ hiện hoặc ẩn mật khẩu để thuận tiện khi sử dụng.
+API có khả năng kiểm tra mật khẩu dựa trên 5 tiêu chí và trả về số điểm, mức độ bảo mật cùng nội dung đánh giá.
 
-Luồng hoạt động hoàn chỉnh của hệ thống:
-
-```text
-Website
-   ↓
-JavaScript fetch()
-   ↓
-Nginx
-   ↓
-Node-RED API
-   ↓
-Function kiểm tra mật khẩu
-   ↓
-JSON
-   ↓
-Website hiển thị kết quả
-```
+Website có giao diện nhập mật khẩu, chức năng hiện/ẩn mật khẩu và hiển thị kết quả kiểm tra trực tiếp cho người dùng.
