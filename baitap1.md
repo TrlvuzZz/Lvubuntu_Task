@@ -1,3 +1,7 @@
+# BÀI TẬP 1
+
+Bài tập thực hành quá trình cài đặt, cấu hình Git và kết nối với GitHub, sau đó triển khai hệ thống trên Ubuntu Linux thông qua VMware. Nội dung thực hiện bao gồm cài đặt Docker Compose, triển khai các dịch vụ Nginx, Node-RED, MariaDB, phpMyAdmin, cấu hình Cloudflare Tunnel và thiết lập Nginx để chạy hai website với hai tên miền khác nhau.
+
 ## Cài đặt và cấu hình Git/GitHub
 
 Kiểm tra phiên bản Git đã được cài đặt trên máy:
@@ -39,8 +43,6 @@ git config --global --list
 ```
 
 ![Kiểm tra cấu hình Git](./images/baitap1/git-config.png)
-
-# BÀI TẬP 1
 
 ## 1. Giả lập hệ điều hành Linux
 
