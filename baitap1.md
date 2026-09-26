@@ -6,7 +6,7 @@ Kiểm tra phiên bản Git đã được cài đặt trên máy:
 git --version
 ```
 
-![Kiểm tra phiên bản Git](./images/git-version.png)
+![Kiểm tra phiên bản Git](./images/baitap1/git-version.png)
 
 Kiểm tra tên người dùng Git đã cấu hình:
 
@@ -14,7 +14,7 @@ Kiểm tra tên người dùng Git đã cấu hình:
 git config --global user.name
 ```
 
-![Kiểm tra tên người dùng Git](./images/git-username.png)
+![Kiểm tra tên người dùng Git](./images/baitap1/git-username.png)
 
 Kiểm tra email được sử dụng cho Git:
 
@@ -22,7 +22,7 @@ Kiểm tra email được sử dụng cho Git:
 git config --global user.email
 ```
 
-![Kiểm tra email Git](./images/git-email.png)
+![Kiểm tra email Git](./images/baitap1/git-email.png)
 
 Kiểm tra kết nối SSH với tài khoản GitHub:
 
@@ -30,7 +30,7 @@ Kiểm tra kết nối SSH với tài khoản GitHub:
 ssh -T git@github.com
 ```
 
-![Kiểm tra kết nối SSH với GitHub](./images/github-ssh.png)
+![Kiểm tra kết nối SSH với GitHub](./images/baitap1/github-ssh.png)
 
 Kiểm tra các thông tin cấu hình Git hiện tại:
 
@@ -38,7 +38,7 @@ Kiểm tra các thông tin cấu hình Git hiện tại:
 git config --global --list
 ```
 
-![Kiểm tra cấu hình Git](./images/git-config.png)
+![Kiểm tra cấu hình Git](./images/baitap1/git-config.png)
 
 # BÀI TẬP 1
 
