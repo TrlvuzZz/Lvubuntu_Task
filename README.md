@@ -1,4 +1,4 @@
-# BÀI TẬP LẬP TRÌNH WEB
+# BÀI TẬP PHÁT TRIỂN ỨNG DỤNG TRÊN NỀN WEB
 
 Repository lưu trữ nội dung bài tập môn **Phát triển ứng dụng trên nền web**.
 
