@@ -3,159 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tài Xỉu</title>
+    <title>Kiểm tra độ mạnh mật khẩu</title>
 
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #181818;
-            color: white;
-            text-align: center;
-            padding-top: 50px;
+            background: #f2f2f2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
 
-        .game {
-            width: 400px;
-            margin: auto;
+        .container {
+            background: white;
             padding: 30px;
-            background: #292929;
-            border-radius: 20px;
+            width: 350px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
         }
 
-        .dice {
-            font-size: 70px;
-            margin: 25px 0;
+        h2 {
+            text-align: center;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
         }
 
         button {
-            padding: 12px 25px;
-            margin: 5px;
+            width: 100%;
+            padding: 12px;
+            margin-top: 12px;
             border: none;
-            border-radius: 10px;
-            font-size: 18px;
+            border-radius: 6px;
             cursor: pointer;
+            font-size: 16px;
         }
 
-        .tai {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .xiu {
-            background: #3498db;
-            color: white;
-        }
-
-        .lac {
-            background: #f1c40f;
-            color: #111;
-        }
-
-        .selected {
-            outline: 4px solid white;
-        }
-
-        #ketqua {
-            font-size: 22px;
+        #result {
             margin-top: 20px;
+            line-height: 1.8;
         }
     </style>
 </head>
 
 <body>
 
-<div class="game">
-    <h1>🎲 TÀI XỈU 🎲</h1>
+<div class="container">
 
-    <p>Chọn Tài hoặc Xỉu</p>
+    <h2>Kiểm tra mật khẩu</h2>
 
-    <button id="tai" class="tai" onclick="chon('Tài')">
-        TÀI
+    <input
+        type="password"
+        id="password"
+        placeholder="Nhập mật khẩu"
+    >
+
+    <button onclick="checkPassword()">
+        Kiểm tra
     </button>
 
-    <button id="xiu" class="xiu" onclick="chon('Xỉu')">
-        XỈU
-    </button>
+    <div id="result"></div>
 
-    <div class="dice" id="xucxac">
-        ⚀ ⚀ ⚀
-    </div>
-
-    <button class="lac" onclick="lacXucXac()">
-        LẮC XÚC XẮC
-    </button>
-
-    <div id="ketqua">Chưa có kết quả</div>
 </div>
 
 <script>
-    let luaChon = "";
+function checkPassword() {
 
-    const matXucXac = [
-        "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"
-    ];
+    const password =
+        document.getElementById("password").value;
 
-    function chon(loai) {
-        luaChon = loai;
-
-        document.getElementById("tai").classList.remove("selected");
-        document.getElementById("xiu").classList.remove("selected");
-
-        if (loai === "Tài") {
-            document.getElementById("tai").classList.add("selected");
-        } else {
-            document.getElementById("xiu").classList.add("selected");
-        }
-
-        document.getElementById("ketqua").innerHTML =
-            "Bạn đã chọn: <b>" + loai + "</b>";
+    if (password === "") {
+        document.getElementById("result").innerHTML =
+            "Vui lòng nhập mật khẩu.";
+        return;
     }
 
-    function lacXucXac() {
+    fetch(
+        "/api/check-password?password=" +
+        encodeURIComponent(password)
+    )
+    .then(response => response.json())
+    .then(data => {
 
-        if (luaChon === "") {
-            alert("Chọn Tài hoặc Xỉu trước!");
-            return;
-        }
+        document.getElementById("result").innerHTML =
+            "<b>Điểm:</b> " + data.score +
+            "/5<br>" +
+            "<b>Độ mạnh:</b> " + data.level +
+            "<br>" +
+            data.message;
 
-        let x1 = Math.floor(Math.random() * 6) + 1;
-        let x2 = Math.floor(Math.random() * 6) + 1;
-        let x3 = Math.floor(Math.random() * 6) + 1;
+    })
+    .catch(error => {
 
-        let tong = x1 + x2 + x3;
+        document.getElementById("result").innerHTML =
+            "Không thể kết nối tới API.";
 
-        document.getElementById("xucxac").innerHTML =
-            matXucXac[x1 - 1] + " " +
-            matXucXac[x2 - 1] + " " +
-            matXucXac[x3 - 1];
-
-        // Bản đơn giản:
-        // 4-10 = Xỉu
-        // 11-17 = Tài
-        // Bộ ba xử lý riêng
-
-        let ketQua;
-
-        if (x1 === x2 && x2 === x3) {
-            ketQua = "Bộ ba";
-        } else if (tong >= 11) {
-            ketQua = "Tài";
-        } else {
-            ketQua = "Xỉu";
-        }
-
-        let thongBao =
-            "Tổng: <b>" + tong + "</b><br>" +
-            "Kết quả: <b>" + ketQua + "</b><br>";
-
-        if (ketQua === luaChon) {
-            thongBao += "🎉 Bạn đoán đúng!";
-        } else {
-            thongBao += "😢 Bạn đoán sai!";
-        }
-
-        document.getElementById("ketqua").innerHTML = thongBao;
-    }
+        console.error(error);
+    });
+}
 </script>
 
 </body>

@@ -1,6 +1,6 @@
 # BÀI TẬP LẬP TRÌNH WEB
 
-Repository lưu trữ nội dung bài tập môn **Lập trình Web**.
+Repository lưu trữ nội dung bài tập môn **Phát triển ứng dụng trên nền web**.
 
 ## Thông tin sinh viên:
 + **Họ và tên:** Trần Lâm Vũ
