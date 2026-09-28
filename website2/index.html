@@ -3,241 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Kiểm tra độ mạnh mật khẩu</title>
+    <title>Tài Xỉu</title>
 
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
         body {
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             font-family: Arial, sans-serif;
-            background: #f3f4f6;
+            background: #181818;
+            color: white;
+            text-align: center;
+            padding-top: 50px;
         }
 
-        .box {
-            width: 420px;
-            background: white;
+        .game {
+            width: 400px;
+            margin: auto;
             padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            background: #292929;
+            border-radius: 20px;
         }
 
-        h2 {
-            margin-top: 0;
-            text-align: center;
+        .dice {
+            font-size: 70px;
+            margin: 25px 0;
         }
 
-        .description {
-            text-align: center;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-
-        .password-box {
-            position: relative;
-            margin-bottom: 15px;
-        }
-
-        #password {
-            width: 100%;
-            padding: 12px 70px 12px 12px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            outline: none;
-        }
-
-        #password:focus {
-            border-color: #555;
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 8px;
-            top: 50%;
-            transform: translateY(-50%);
+        button {
+            padding: 12px 25px;
+            margin: 5px;
             border: none;
-            background: transparent;
-            cursor: pointer;
-            font-size: 14px;
-            padding: 6px 8px;
-        }
-
-        .check-button {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
+            border-radius: 10px;
+            font-size: 18px;
             cursor: pointer;
         }
 
-        #result {
-            display: none;
-            margin-top: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            line-height: 1.8;
+        .tai {
+            background: #e74c3c;
+            color: white;
         }
 
-        .note {
+        .xiu {
+            background: #3498db;
+            color: white;
+        }
+
+        .lac {
+            background: #f1c40f;
+            color: #111;
+        }
+
+        .selected {
+            outline: 4px solid white;
+        }
+
+        #ketqua {
+            font-size: 22px;
             margin-top: 20px;
-            font-size: 13px;
-            line-height: 1.6;
         }
     </style>
 </head>
 
 <body>
 
-<div class="box">
+<div class="game">
+    <h1>🎲 TÀI XỈU 🎲</h1>
 
-    <h2>Kiểm tra độ mạnh mật khẩu</h2>
+    <p>Chọn Tài hoặc Xỉu</p>
 
-    <div class="description">
-        Nhập mật khẩu để kiểm tra mức độ bảo mật
-    </div>
-
-    <div class="password-box">
-
-        <input
-            type="password"
-            id="password"
-            placeholder="Nhập mật khẩu"
-        >
-
-        <button
-            type="button"
-            class="toggle-password"
-            onclick="togglePassword()"
-        >
-            Hiện
-        </button>
-
-    </div>
-
-    <button
-        class="check-button"
-        onclick="checkPassword()"
-    >
-        Kiểm tra
+    <button id="tai" class="tai" onclick="chon('Tài')">
+        TÀI
     </button>
 
-    <div id="result"></div>
+    <button id="xiu" class="xiu" onclick="chon('Xỉu')">
+        XỈU
+    </button>
 
-    <div class="note">
-        Mật khẩu được đánh giá dựa trên 5 tiêu chí:
-        độ dài, chữ hoa, chữ thường, chữ số và ký tự đặc biệt.
+    <div class="dice" id="xucxac">
+        ⚀ ⚀ ⚀
     </div>
 
+    <button class="lac" onclick="lacXucXac()">
+        LẮC XÚC XẮC
+    </button>
+
+    <div id="ketqua">Chưa có kết quả</div>
 </div>
 
 <script>
+    let luaChon = "";
 
-function togglePassword() {
+    const matXucXac = [
+        "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"
+    ];
 
-    const password =
-        document.getElementById("password");
+    function chon(loai) {
+        luaChon = loai;
 
-    const button =
-        document.querySelector(".toggle-password");
+        document.getElementById("tai").classList.remove("selected");
+        document.getElementById("xiu").classList.remove("selected");
 
-    if (password.type === "password") {
-
-        password.type = "text";
-        button.textContent = "Ẩn";
-
-    } else {
-
-        password.type = "password";
-        button.textContent = "Hiện";
-
-    }
-}
-
-
-async function checkPassword() {
-
-    const password =
-        document.getElementById("password").value;
-
-    const result =
-        document.getElementById("result");
-
-
-    if (password === "") {
-
-        result.style.display = "block";
-
-        result.innerHTML =
-            "Vui lòng nhập mật khẩu.";
-
-        return;
-    }
-
-
-    result.style.display = "block";
-    result.innerHTML = "Đang kiểm tra...";
-
-
-    try {
-
-        const response = await fetch(
-            "/api/check-password?password=" +
-            encodeURIComponent(password)
-        );
-
-
-        if (!response.ok) {
-            throw new Error("API không phản hồi");
+        if (loai === "Tài") {
+            document.getElementById("tai").classList.add("selected");
+        } else {
+            document.getElementById("xiu").classList.add("selected");
         }
 
-
-        const data = await response.json();
-
-
-        result.innerHTML =
-            "<b>Điểm:</b> " +
-            data.score +
-            "/5<br>" +
-
-            "<b>Độ mạnh:</b> " +
-            data.level +
-            "<br>" +
-
-            "<b>Đánh giá:</b> " +
-            data.message;
-
-
-    } catch (error) {
-
-        result.innerHTML =
-            "Không thể kết nối tới API.";
-
+        document.getElementById("ketqua").innerHTML =
+            "Bạn đã chọn: <b>" + loai + "</b>";
     }
-}
 
+    function lacXucXac() {
 
-/* Nhấn Enter cũng có thể kiểm tra */
-
-document
-    .getElementById("password")
-    .addEventListener("keydown", function(event) {
-
-        if (event.key === "Enter") {
-            checkPassword();
+        if (luaChon === "") {
+            alert("Chọn Tài hoặc Xỉu trước!");
+            return;
         }
 
-    });
+        let x1 = Math.floor(Math.random() * 6) + 1;
+        let x2 = Math.floor(Math.random() * 6) + 1;
+        let x3 = Math.floor(Math.random() * 6) + 1;
 
+        let tong = x1 + x2 + x3;
+
+        document.getElementById("xucxac").innerHTML =
+            matXucXac[x1 - 1] + " " +
+            matXucXac[x2 - 1] + " " +
+            matXucXac[x3 - 1];
+
+        // Bản đơn giản:
+        // 4-10 = Xỉu
+        // 11-17 = Tài
+        // Bộ ba xử lý riêng
+
+        let ketQua;
+
+        if (x1 === x2 && x2 === x3) {
+            ketQua = "Bộ ba";
+        } else if (tong >= 11) {
+            ketQua = "Tài";
+        } else {
+            ketQua = "Xỉu";
+        }
+
+        let thongBao =
+            "Tổng: <b>" + tong + "</b><br>" +
+            "Kết quả: <b>" + ketQua + "</b><br>";
+
+        if (ketQua === luaChon) {
+            thongBao += "🎉 Bạn đoán đúng!";
+        } else {
+            thongBao += "😢 Bạn đoán sai!";
+        }
+
+        document.getElementById("ketqua").innerHTML = thongBao;
+    }
 </script>
 
 </body>
